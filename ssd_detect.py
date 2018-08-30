@@ -9,9 +9,12 @@ import sys
 import argparse
 import numpy as np
 from PIL import Image, ImageDraw
+
 ### add start ###
 from glob import glob
+import time
 ### add end ###
+
 # Make sure that caffe is on the python path:
 caffe_root = '/home/dl-desktop4/projects/caffe'
 os.chdir(caffe_root)
@@ -108,44 +111,76 @@ class CaffeDetection:
             result.append([xmin, ymin, xmax, ymax, label, score, label_name])
         return result
 
-def main(args):
+def main():
     '''main '''
+    args = parse_args()
+    detection = CaffeDetection(args.gpu_id,
+                               args.model_def, args.model_weights,
+                               args.image_resize, args.labelmap_file)
+
 ### add start ###
-    IMAGE_FILES = glob('/home/dl-desktop4/projects/caffe/examples/ssd/*.jpg')
+    if os.path.exists('/home/dl-desktop4/projects/test/caffe/out/detect_result.log'):
+        os.remove('/home/dl-desktop4/projects/test/caffe/out/detect_result.log')
+
+#    IMAGE_FILES = glob('/home/dl-desktop4/projects/test/caffe/in/*.jpg')
+#    IMAGE_FILES = glob('/home/dl-desktop4/projects/test/VOCdevkit/VOC2012/JPEGImages/*.jpg')
+    IMAGE_FILES = glob('/home/dl-desktop4/projects/test/caffe/in/*.bmp')
     IMAGE_FILES.sort()
 
+    cnt = 1
     for IMAGE_FILE1 in IMAGE_FILES:
-        image_file = IMAGE_FILE1.rsplit("/",1)
-        print image_file
+        args1 = parse_args1(IMAGE_FILE1)
+        ifn = args1.image_file.rsplit("/",1)[1]		# path / nnnn.jpg
+#        print '1 Go:' + ifn
 ### add end ###
-        detection = CaffeDetection(args.gpu_id,
-                                   args.model_def, args.model_weights,
-                                   args.image_resize, args.labelmap_file)
-#        result = detection.detect(args.image_file)
-        result = detection.detect(image_file)
-        print '1 Go:' + image_file
-        print result
+#        detection = CaffeDetection(args.gpu_id,
+#                                   args.model_def, args.model_weights,
+#                                   args.image_resize, args.labelmap_file)
+        start_time = time.time()
+        result = detection.detect(args1.image_file)
+        elspsed_time = time.time() - start_time 
+#        print result
+#        print '2 detect done'
 
-#        img = Image.open(args.image_file)
-        img = Image.open(image_file)
+        img = Image.open(args1.image_file)
         draw = ImageDraw.Draw(img)
         width, height = img.size
-        print width, height
-        print '2 Result:'
+#        print width, height
+#        print '3 result:'
+### add start ###
+        f = open('/home/dl-desktop4/projects/test/caffe/out/detect_result.log','a')
+        f.write(str(ifn))
+### add end ###
         for item in result:
             xmin = int(round(item[0] * width))
             ymin = int(round(item[1] * height))
             xmax = int(round(item[2] * width))
             ymax = int(round(item[3] * height))
             draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
-            draw.text([xmin, ymin], item[-1] + str(item[-2]), (0, 0, 255))
-            print item
-            print [xmin, ymin, xmax, ymax]
-            print [xmin, ymin], item[-1]
+            draw.text([xmin, ymin], item[-1] + ' ' + str(item[-2]), (0, 0, 255))
+#            print item
+#            print [xmin, ymin, xmax, ymax]
+#            print [xmin, ymin], item[-1], str(item[-2])
+            f.write(str(item))
+            f.write(str([xmin, ymin, xmax, ymax]))
+            print ('Cnt=' + str(cnt) + ' ' + str(ifn) + ' ' + str(item[-1]) + ' ' + str(elspsed_time) + '[sec]')
+
 #        img.save('/home/dl-desktop4/projects/detect_result.jpg')
-#        img.save('/home/dl-desktop4/projects/detect_result.bmp')
-        img.save('"/home/dl-desktop4/projects/caffe/examples/ssd/result/" + image_file') 
-        print '3 Finish'
+#        img.save('/home/dl-desktop4/projects/test/caffe/out/detect_result.jpg')
+
+#        savefn1 = '/home/dl-desktop4/projects/test/caffe/out/'
+#        savefn2 = args.image_file.rsplit("/",1)[1]		# path / nnnn.jpg
+#        savefn2 = savefn2.split(".",1)[0]				# nnnn . jpg
+#        savefn3 = '.jpg'
+#        img.save(savefn1 + savefn2 + savefn3)
+
+        f.write('\n')
+        f.close()
+#        img.save('/home/dl-desktop4/projects/test/caffe/out/' + ifn.split(".",1)[0] + '.jpg')
+        img.save('/home/dl-desktop4/projects/test/caffe/out/' + ifn.split(".",1)[0] + '.bmp')
+        cnt+=1
+
+#        print '4 finish'
 
 def parse_args():
     '''parse args'''
@@ -168,7 +203,15 @@ def parse_args():
 #    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/VOCdevkit/VOC2012/JPEGImages/2007_002119.jpg')
 #    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_002500.bmp')
 #    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_021200.bmp')
+#    parser.add_argument('--image_file', default=IMAGE_FILE1)
     return parser.parse_args()
 
+### add start ###
+def parse_args1(IMAGE_FILE1):
+    parser1 = argparse.ArgumentParser()
+    parser1.add_argument('--image_file', default=IMAGE_FILE1)
+    return parser1.parse_args()
+### add end ###
+
 if __name__ == '__main__':
-    main(parse_args())
+    main()
