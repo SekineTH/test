@@ -127,7 +127,6 @@ def main():
         os.remove('/home/dl-desktop4/projects/test/caffe/out/detect_result.log')
 
 #    IMAGE_FILES = glob('/home/dl-desktop4/projects/test/caffe/in/*.jpg')
-#    IMAGE_FILES = glob('/home/dl-desktop4/projects/test/VOCdevkit/VOC2012/JPEGImages/*.jpg')
     IMAGE_FILES = glob('/home/dl-desktop4/projects/test/caffe/in/*.bmp')
     IMAGE_FILES.sort()
 
@@ -154,7 +153,7 @@ def main():
 ### add start ###
         f = open('/home/dl-desktop4/projects/test/caffe/out/detect_result.log','a')
         f.write(str(ifn))
-#       f.write(' detect-time(sec)=' + str(elspsed_time))
+        f.write('[' + str(elspsed_time) + ']')
 ### add end ###
         for item in result:
             xmin = int(round(item[0] * width))
@@ -166,11 +165,9 @@ def main():
 #            print item
 #            print [xmin, ymin, xmax, ymax]
 #            print [xmin, ymin], item[-1], str(item[-2])
-#            f.write(' 1=' + str(item[-1]))
-#            f.write(' 2=' + str(item[-2]))
-#            f.write(' pos=' + str([xmin, ymin, xmax, ymax]))
-#            f.write(' all=' + str(item))
-            print ('Cnt=' + str(cnt) + ' ' + str(ifn) + ' ' + str(item[-1]) + ' ' + str(elspsed_time) + '[sec]')
+            f.write(';' + str([xmin, ymin, xmax, ymax]))
+            f.write(str(item))
+            print ('Cnt=' + str(cnt) + ' ' + str(ifn) + ' ' + str(item[-1]) + ' ' + str(item[-2]) + ' ' + str(elspsed_time) + '[sec]')
 
 #        img.save('/home/dl-desktop4/projects/detect_result.jpg')
 #        img.save('/home/dl-desktop4/projects/test/caffe/out/detect_result.jpg')
@@ -201,33 +198,22 @@ def parse_args():
 #    parser.add_argument('--model_weights', default='models/VGGNet/VOC0712/SSD_300x300/VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
 #    parser.add_argument('--image_file', default='examples/images/fish-bike.jpg')
 
-
-
     #13 SSD300/03 ILSVRC
 #    parser = argparse.ArgumentParser()
 #    parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
 #    parser.add_argument('--labelmap_file', default='data/ILSVRC2016/labelmap_ilsvrc_det.prototxt')
 #    parser.add_argument('--model_def', default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/13_SSD_300x300/deploy.prototxt')
 #    parser.add_argument('--image_resize', default=300, type=int)
-#    parser.add_argument('--model_weights', default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/13_SSD_300x300/'
-#                        'VGG_ILSVRC2016_SSD_300x300_iter_440000.caffemodel')
+#    parser.add_argument('--model_weights', default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/13_SSD_300x300/VGG_ILSVRC2016_SSD_300x300_iter_440000.caffemodel')
 
+
+    #14 SSD500/03 ILSVRC
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
-    parser.add_argument('--labelmap_file',
-#                        default='data/VOC0712/labelmap_voc.prototxt')
-                        default='data/ILSVRC2016/labelmap_ilsvrc_det.prototxt')
-    parser.add_argument('--model_def',
-#                        default='models/VGGNet/VOC0712/SSD_300x300/deploy.prototxt')
-                        default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/13_SSD_300x300/deploy.prototxt')
-    parser.add_argument('--image_resize', default=300, type=int)
-    parser.add_argument('--model_weights',
-#                        default='models/VGGNet/VOC0712/SSD_300x300/'
-#                        'VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
-                        default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/13_SSD_300x300/'
-                        'VGG_ILSVRC2016_SSD_300x300_iter_440000.caffemodel')
-
-
+    parser.add_argument('--labelmap_file', default='data/ILSVRC2016/labelmap_ilsvrc_det.prototxt')
+    parser.add_argument('--model_def', default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/14_SSD_500x500/deploy.prototxt')
+    parser.add_argument('--image_resize', default=500, type=int)
+    parser.add_argument('--model_weights', default='/home/dl-desktop4/projects/models/SSD/03_ILSVRC/14_SSD_500x500/VGG_ilsvrc15_SSD_500x500_iter_480000.caffemodel')
 
 
     return parser.parse_args()
