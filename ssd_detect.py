@@ -9,6 +9,9 @@ import sys
 import argparse
 import numpy as np
 from PIL import Image, ImageDraw
+### add start ###
+from glob import glob
+### add end ###
 # Make sure that caffe is on the python path:
 caffe_root = '/home/dl-desktop4/projects/caffe'
 os.chdir(caffe_root)
@@ -107,31 +110,42 @@ class CaffeDetection:
 
 def main(args):
     '''main '''
-    detection = CaffeDetection(args.gpu_id,
-                               args.model_def, args.model_weights,
-                               args.image_resize, args.labelmap_file)
-    result = detection.detect(args.image_file)
-    print result
-    print '1'
+### add start ###
+    IMAGE_FILES = glob('/home/dl-desktop4/projects/caffe/examples/ssd/*.jpg')
+    IMAGE_FILES.sort()
 
-    img = Image.open(args.image_file)
-    draw = ImageDraw.Draw(img)
-    width, height = img.size
-    print width, height
-    print '2'
-    for item in result:
-        xmin = int(round(item[0] * width))
-        ymin = int(round(item[1] * height))
-        xmax = int(round(item[2] * width))
-        ymax = int(round(item[3] * height))
-        draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
-        draw.text([xmin, ymin], item[-1] + str(item[-2]), (0, 0, 255))
-        print item
-        print [xmin, ymin, xmax, ymax]
-        print [xmin, ymin], item[-1]
-#    img.save('/home/dl-desktop4/projects/detect_result.jpg')
-    img.save('/home/dl-desktop4/projects/detect_result.bmp')
-    print '3'
+    for IMAGE_FILE1 in IMAGE_FILES:
+        image_file = IMAGE_FILE1.rsplit("/",1)
+        print image_file
+### add end ###
+        detection = CaffeDetection(args.gpu_id,
+                                   args.model_def, args.model_weights,
+                                   args.image_resize, args.labelmap_file)
+#        result = detection.detect(args.image_file)
+        result = detection.detect(image_file)
+        print '1 Go:' + image_file
+        print result
+
+#        img = Image.open(args.image_file)
+        img = Image.open(image_file)
+        draw = ImageDraw.Draw(img)
+        width, height = img.size
+        print width, height
+        print '2 Result:'
+        for item in result:
+            xmin = int(round(item[0] * width))
+            ymin = int(round(item[1] * height))
+            xmax = int(round(item[2] * width))
+            ymax = int(round(item[3] * height))
+            draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
+            draw.text([xmin, ymin], item[-1] + str(item[-2]), (0, 0, 255))
+            print item
+            print [xmin, ymin, xmax, ymax]
+            print [xmin, ymin], item[-1]
+#        img.save('/home/dl-desktop4/projects/detect_result.jpg')
+#        img.save('/home/dl-desktop4/projects/detect_result.bmp')
+        img.save('"/home/dl-desktop4/projects/caffe/examples/ssd/result/" + image_file') 
+        print '3 Finish'
 
 def parse_args():
     '''parse args'''
@@ -153,7 +167,7 @@ def parse_args():
 #    parser.add_argument('--image_file', default='examples/images/cat.jpg')
 #    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/VOCdevkit/VOC2012/JPEGImages/2007_002119.jpg')
 #    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_002500.bmp')
-    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_021200.bmp')
+#    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_021200.bmp')
     return parser.parse_args()
 
 if __name__ == '__main__':
