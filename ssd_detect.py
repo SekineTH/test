@@ -10,7 +10,7 @@ import argparse
 import numpy as np
 from PIL import Image, ImageDraw
 # Make sure that caffe is on the python path:
-caffe_root = './'
+caffe_root = '/home/dl-desktop4/projects/caffe'
 os.chdir(caffe_root)
 sys.path.insert(0, os.path.join(caffe_root, 'python'))
 import caffe
@@ -112,11 +112,13 @@ def main(args):
                                args.image_resize, args.labelmap_file)
     result = detection.detect(args.image_file)
     print result
+    print '1'
 
     img = Image.open(args.image_file)
     draw = ImageDraw.Draw(img)
     width, height = img.size
     print width, height
+    print '2'
     for item in result:
         xmin = int(round(item[0] * width))
         ymin = int(round(item[1] * height))
@@ -127,22 +129,31 @@ def main(args):
         print item
         print [xmin, ymin, xmax, ymax]
         print [xmin, ymin], item[-1]
-    img.save('detect_result.jpg')
-
+#    img.save('/home/dl-desktop4/projects/detect_result.jpg')
+    img.save('/home/dl-desktop4/projects/detect_result.bmp')
+    print '3'
 
 def parse_args():
     '''parse args'''
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
     parser.add_argument('--labelmap_file',
-                        default='data/VOC0712/labelmap_voc.prototxt')
+#                        default='data/VOC0712/labelmap_voc.prototxt')
+                        default='data/ILSVRC2016/labelmap_ilsvrc_det.prototxt')
     parser.add_argument('--model_def',
-                        default='models/VGGNet/VOC0712/SSD_300x300/deploy.prototxt')
+#                        default='models/VGGNet/VOC0712/SSD_300x300/deploy.prototxt')
+                        default='/home/dl-desktop4/projects/SSD_300x300/deploy.prototxt')
     parser.add_argument('--image_resize', default=300, type=int)
     parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC0712/SSD_300x300/'
-                        'VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
-    parser.add_argument('--image_file', default='examples/images/fish-bike.jpg')
+#                        default='models/VGGNet/VOC0712/SSD_300x300/'
+#                        'VGG_VOC0712_SSD_300x300_iter_120000.caffemodel')
+                        default='/home/dl-desktop4/projects/SSD_300x300/'
+                        'VGG_ILSVRC2016_SSD_300x300_iter_440000.caffemodel')
+#    parser.add_argument('--image_file', default='examples/images/fish-bike.jpg')
+#    parser.add_argument('--image_file', default='examples/images/cat.jpg')
+#    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/VOCdevkit/VOC2012/JPEGImages/2007_002119.jpg')
+#    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_002500.bmp')
+    parser.add_argument('--image_file', default='/home/dl-desktop4/projects/test/0022_021200.bmp')
     return parser.parse_args()
 
 if __name__ == '__main__':
